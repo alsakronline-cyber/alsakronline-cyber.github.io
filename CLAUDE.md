@@ -56,7 +56,7 @@ unless the owner confirms rights.
 - Tailwind logical utilities (`ms-`, `pe-`, `start-`) so RTL works from one stylesheet; `<html dir>` set per locale.
 - Vanilla TS scripts for interactivity (video lazy-play, lightbox, counters, quote wizard, theme/lang switch) — no UI framework.
 - Fonts: Cairo (Arabic) + Inter / Space Grotesk (Latin) from Google Fonts.
-- Hosting: any static host (Netlify / Vercel / Cloudflare Pages / cPanel).
+- Hosting: **GitHub Pages** — repo `alsakronline-cyber/alsakronline-cyber.github.io` (public), live at https://alsakronline-cyber.github.io/. Every push to `main` builds and deploys via `.github/workflows/deploy.yml`. If a custom domain is added, update `site` in `astro.config.mjs`.
 
 ## Video pipeline
 Raw footage (~530 MB) lives untouched in `raw-videos/`. `scripts/encode-videos.mjs` (ffmpeg) writes ~121 MB to `public/media/`:
