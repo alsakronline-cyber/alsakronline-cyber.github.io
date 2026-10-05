@@ -1,0 +1,219 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { products } from '../../data/products';
+import { industries } from '../../data/content';
+import { site, media } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+const q = t.quote;
+const bg = media('buffer-chain');
+---
+<Layout lang={lang} title={q.title} description={q.text}>
+  <section class="relative isolate overflow-hidden pb-10 pt-32">
+    <div class="grid-lines absolute inset-0 -z-10 opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
+    <div class="container-x grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+      <!-- Intro / sidebar -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <nav aria-label="Breadcrumb" class="mb-5 flex gap-2 text-sm text-muted"><a href={href(lang)} class="hover:text-brand">{t.nav.home}</a><span>/</span><span class="text-ink">{q.title}</span></nav>
+        <h1 class="text-4xl font-bold sm:text-5xl">{q.title}</h1>
+        <p class="mt-4 text-lg text-muted">{q.text}</p>
+        <div class="relative mt-8 hidden overflow-hidden rounded-3xl bg-black lg:block">
+          <video data-src={bg.loop} data-autoplay muted loop playsinline preload="none" poster={bg.poster} class="aspect-[4/3] w-full object-cover" aria-hidden="true"></video>
+        </div>
+        <div class="mt-6 space-y-2 text-sm text-muted">
+          <a href={`tel:${site.phone}`} class="flex items-center gap-2 hover:text-brand"><Icon name="phone" size={16} /><span dir="ltr">{site.phoneDisplay}</span></a>
+          <a href={`mailto:${site.email}`} class="flex items-center gap-2 hover:text-brand"><Icon name="mail" size={16} />{site.email}</a>
+        </div>
+      </aside>
+
+      <!-- Wizard -->
+      <form id="quote" class="card overflow-hidden" novalidate>
+        <ol class="grid grid-cols-4 border-b border-line text-xs font-semibold sm:text-sm">
+          {q.steps.map((s, i) => (
+            <li data-step-tab={i} class="flex flex-col items-center gap-2 p-4 text-muted transition data-[state=active]:text-brand data-[state=done]:text-ink">
+              <span class="grid size-8 place-items-center rounded-full border-2 border-current">{i + 1}</span>
+              <span class="text-center">{s}</span>
+            </li>
+          ))}
+        </ol>
+        <div class="h-1 bg-bg-soft"><div data-progress class="h-full bg-brand transition-all duration-500" style="width:25%"></div></div>
+
+        <div class="p-6 sm:p-10">
+          <!-- Step 1: industry -->
+          <fieldset data-step="0">
+            <legend class="text-2xl font-bold">{q.industry}</legend>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+              {industries.map((i) => (
+                <label class="option">
+                  <input type="radio" name="industry" value={tr(i.name, lang)} required class="sr-only" />
+                  <span class="font-semibold">{tr(i.name, lang)}</span>
+                </label>
+              ))}
+              <label class="option"><input type="radio" name="industry" value={lang === 'ar' ? 'أخرى' : 'Other'} class="sr-only" /><span class="font-semibold">{t.contact.subjects[4]}</span></label>
+            </div>
+          </fieldset>
+
+          <!-- Step 2: system -->
+          <fieldset data-step="1" hidden>
+            <legend class="text-2xl font-bold">{q.system}</legend>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+              {products.map((p) => (
+                <label class="option">
+                  <input type="radio" name="system" value={tr(p.name, lang)} data-slug={p.slug} required class="sr-only" />
+                  <span class="flex items-center gap-3 font-semibold"><Icon name={p.icon} class="text-brand" />{tr(p.name, lang)}</span>
+                </label>
+              ))}
+              <label class="option"><input type="radio" name="system" value={q.notSure} class="sr-only" /><span class="font-semibold">{q.notSure}</span></label>
+            </div>
+          </fieldset>
+
+          <!-- Step 3: requirements -->
+          <fieldset data-step="2" hidden>
+            <legend class="text-2xl font-bold">{q.requirements}</legend>
+            <div class="mt-6 grid gap-5 sm:grid-cols-2">
+              <div class="sm:col-span-2"><label class="label" for="q-product">{q.productDesc} *</label><input id="q-product" name="product" required class="field" /></div>
+              <div><label class="label" for="q-size">{q.productSize}</label><input id="q-size" name="size" class="field" dir="ltr" placeholder="200 × 150 × 100" /></div>
+              <div><label class="label" for="q-weight">{q.productWeight}</label><input id="q-weight" name="weight" type="number" min="0" step="any" class="field" dir="ltr" /></div>
+              <div><label class="label" for="q-rate">{q.throughput}</label><input id="q-rate" name="throughput" type="number" min="0" class="field" dir="ltr" /></div>
+              <div><label class="label" for="q-length">{q.length}</label><input id="q-length" name="length" type="number" min="0" step="any" class="field" dir="ltr" /></div>
+              <div><label class="label" for="q-height">{q.height}</label><input id="q-height" name="height" type="number" step="any" class="field" dir="ltr" /></div>
+              <div><label class="label" for="q-env">{q.environment}</label><select id="q-env" name="environment" class="field">{q.envOptions.map((o) => <option>{o}</option>)}</select></div>
+              <div class="sm:col-span-2"><label class="label" for="q-time">{q.timeline}</label><select id="q-time" name="timeline" class="field">{q.timelineOptions.map((o) => <option>{o}</option>)}</select></div>
+            </div>
+          </fieldset>
+
+          <!-- Step 4: contact -->
+          <fieldset data-step="3" hidden>
+            <legend class="text-2xl font-bold">{q.contact}</legend>
+            <div class="mt-6 grid gap-5 sm:grid-cols-2">
+              <div><label class="label" for="q-name">{q.name} *</label><input id="q-name" name="name" required class="field" autocomplete="name" /></div>
+              <div><label class="label" for="q-company">{q.company}</label><input id="q-company" name="company" class="field" autocomplete="organization" /></div>
+              <div><label class="label" for="q-phone">{q.phone} *</label><input id="q-phone" name="phone" type="tel" required class="field" dir="ltr" autocomplete="tel" /></div>
+              <div><label class="label" for="q-email">{q.email}</label><input id="q-email" name="email" type="email" class="field" dir="ltr" autocomplete="email" /></div>
+              <div class="sm:col-span-2"><label class="label" for="q-city">{q.city}</label><input id="q-city" name="city" class="field" /></div>
+              <div class="sm:col-span-2"><label class="label" for="q-notes">{q.notes}</label><textarea id="q-notes" name="notes" rows="3" class="field"></textarea></div>
+            </div>
+            <div class="mt-8 rounded-2xl bg-bg-soft p-5">
+              <h3 class="font-bold">{q.summary}</h3>
+              <dl data-summary class="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2"></dl>
+            </div>
+          </fieldset>
+
+          <p data-error class="mt-6 hidden text-sm font-medium text-red-500" role="alert">{q.required}</p>
+          <p data-sent class="mt-6 hidden rounded-xl bg-[#25d366]/10 p-4 text-sm font-medium text-[#1a9e4b]" role="status">{q.sent}</p>
+
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
+            <button type="button" data-prev class="btn btn-ghost invisible"><Icon name="arrow" size={18} class="rotate-180 rtl:rotate-0" />{t.actions.back}</button>
+            <div class="flex flex-wrap gap-3">
+              <button type="button" data-next class="btn btn-primary">{t.actions.next}<Icon name="arrow" size={18} class="flip-rtl" /></button>
+              <button type="submit" data-via="whatsapp" class="btn hidden bg-[#25d366] text-white"><Icon name="whatsapp" />{t.actions.sendWhatsApp}</button>
+              <button type="submit" data-via="email" class="btn btn-primary hidden"><Icon name="mail" />{t.actions.sendEmail}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .option {
+    display: flex; align-items: center; min-height: 3.75rem; padding: 1rem 1.25rem; cursor: pointer;
+    border: 1.5px solid var(--line); border-radius: 1rem; transition: border-color .2s, background-color .2s;
+  }
+  .option:hover { border-color: color-mix(in srgb, var(--brand) 60%, var(--line)); }
+  .option:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
+  .option:has(input:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
+</style>
+
+<script>
+  import { sendMessage } from '../../scripts/send';
+
+  const form = document.getElementById('quote') as HTMLFormElement;
+  const steps = [...form.querySelectorAll<HTMLFieldSetElement>('[data-step]')];
+  const tabs = [...form.querySelectorAll<HTMLElement>('[data-step-tab]')];
+  const prev = form.querySelector<HTMLButtonElement>('[data-prev]')!;
+  const next = form.querySelector<HTMLButtonElement>('[data-next]')!;
+  const sendBtns = [...form.querySelectorAll<HTMLButtonElement>('[data-via]')];
+  const error = form.querySelector('[data-error]')!;
+  const progress = form.querySelector<HTMLElement>('[data-progress]')!;
+  let current = 0;
+  let via: 'whatsapp' | 'email' = 'whatsapp';
+
+  // Preselect system from ?product=slug
+  const slug = new URLSearchParams(location.search).get('product');
+  if (slug) form.querySelector<HTMLInputElement>(`input[data-slug="${CSS.escape(slug)}"]`)?.click();
+
+  const labelFor = (el: Element) => {
+    const id = el.getAttribute('id');
+    return (id && form.querySelector(`label[for="${id}"]`)?.textContent?.replace('*', '').trim()) || el.getAttribute('name')!;
+  };
+
+  const fields = (): [string, FormDataEntryValue | null][] => {
+    const out: [string, FormDataEntryValue | null][] = [];
+    steps.forEach((s) => {
+      const legend = s.querySelector('legend')!.textContent!;
+      const radio = s.querySelector<HTMLInputElement>('input[type=radio]:checked');
+      if (radio) out.push([legend, radio.value]);
+      s.querySelectorAll<HTMLInputElement>('input:not([type=radio]), select, textarea').forEach((el) => {
+        if (el.name !== 'notes') out.push([labelFor(el), el.value]);
+      });
+    });
+    return out;
+  };
+
+  const renderSummary = () => {
+    const dl = form.querySelector('[data-summary]')!;
+    dl.innerHTML = '';
+    fields().slice(0, 10).forEach(([k, v]) => {
+      if (!v) return;
+      const row = document.createElement('div');
+      row.className = 'flex justify-between gap-3 border-b border-line/60 py-1';
+      const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
+      const dd = document.createElement('dd'); dd.className = 'text-end font-medium'; dd.textContent = String(v);
+      row.append(dt, dd); dl.append(row);
+    });
+  };
+
+  const show = (i: number) => {
+    current = i;
+    steps.forEach((s, n) => (s.hidden = n !== i));
+    tabs.forEach((tab, n) => (tab.dataset.state = n === i ? 'active' : n < i ? 'done' : ''));
+    progress.style.width = `${((i + 1) / steps.length) * 100}%`;
+    prev.classList.toggle('invisible', i === 0);
+    const last = i === steps.length - 1;
+    next.classList.toggle('hidden', last);
+    sendBtns.forEach((b) => b.classList.toggle('hidden', !last));
+    error.classList.add('hidden');
+    if (last) renderSummary();
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const valid = () => {
+    const ok = [...steps[current].querySelectorAll<HTMLInputElement>('input, select, textarea')].every((el) => el.checkValidity());
+    error.classList.toggle('hidden', ok);
+    return ok;
+  };
+
+  // Auto-advance on choice for the first two steps
+  steps.slice(0, 2).forEach((s, n) => s.addEventListener('change', () => setTimeout(() => show(n + 1), 250)));
+  next.addEventListener('click', () => valid() && show(current + 1));
+  prev.addEventListener('click', () => show(current - 1));
+  sendBtns.forEach((b) => b.addEventListener('click', () => (via = b.dataset.via as typeof via)));
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!valid()) return;
+    const ar = document.documentElement.lang === 'ar';
+    const notes = String(new FormData(form).get('notes') ?? '');
+    sendMessage(via, ar ? 'طلب عرض سعر' : 'Quotation request', fields(), notes);
+    form.querySelector('[data-sent]')!.classList.remove('hidden');
+  });
+
+  show(slug ? 2 : 0);
+  window.scrollTo(0, 0);
+</script>

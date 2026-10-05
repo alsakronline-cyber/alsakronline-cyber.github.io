@@ -1,0 +1,31 @@
+---
+import { media } from '../data/site';
+
+interface Props { eyebrow?: string; title: string; text?: string; video?: string; crumbs?: { label: string; href?: string }[]; }
+const { eyebrow, title, text, video = 'factory-system', crumbs = [] } = Astro.props;
+const m = media(video);
+---
+<section class="relative isolate flex min-h-[62vh] items-end overflow-hidden bg-[#050b14] pb-16 pt-40 text-white lg:min-h-[68vh]">
+  <img src={m.poster} alt="" class="absolute inset-0 -z-20 size-full object-cover" />
+  <video data-src={m.loop} data-autoplay muted loop playsinline preload="none" poster={m.poster} class="absolute inset-0 -z-20 size-full object-cover" aria-hidden="true"></video>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-t from-[#050b14] via-[#050b14]/70 to-[#050b14]/30"></div>
+  <div class="grid-lines absolute inset-0 -z-10 opacity-[.07]"></div>
+  <div class="container-x">
+    {crumbs.length > 0 && (
+      <nav aria-label="Breadcrumb" class="mb-6 flex flex-wrap items-center gap-2 text-sm text-white/60">
+        {crumbs.map((c, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">/</span>}
+            {c.href ? <a href={c.href} class="hover:text-white">{c.label}</a> : <span class="text-white">{c.label}</span>}
+          </>
+        ))}
+      </nav>
+    )}
+    <div class="max-w-3xl" data-reveal>
+      {eyebrow && <span class="eyebrow !text-[#5bb5f2]">{eyebrow}</span>}
+      <h1 class="mt-3 text-4xl font-bold leading-[1.1] sm:text-5xl lg:text-6xl">{title}</h1>
+      {text && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">{text}</p>}
+      <slot />
+    </div>
+  </div>
+</section>

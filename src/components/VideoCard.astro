@@ -1,0 +1,51 @@
+---
+import Icon from './Icon.astro';
+import { media } from '../data/site';
+
+interface Props {
+  video: string;
+  title: string;
+  text?: string;
+  href?: string;
+  tag?: string;
+  tags?: string;
+  cta?: string;
+  aspect?: string;
+  delay?: number;
+}
+const { video, title, text, href, tag, tags, cta, aspect = 'aspect-[4/3]', delay = 0 } = Astro.props;
+const m = media(video);
+const Tag = href ? 'a' : 'div';
+---
+<Tag
+  href={href}
+  data-hover-host
+  data-tags={tags}
+  data-reveal
+  style={`--d:${delay}ms`}
+  class="group card card-hover relative flex flex-col overflow-hidden !rounded-3xl"
+>
+  <div class:list={['relative overflow-hidden bg-black', aspect]}>
+    <img src={m.poster} alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" />
+    <video data-src={m.loop} data-hover muted loop playsinline preload="none" poster={m.poster} class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 [&.playing]:opacity-100" aria-hidden="true"></video>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0"></div>
+    {tag && <span class="absolute start-4 top-4 rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur">{tag}</span>}
+    <button
+      type="button"
+      data-lightbox={m.full}
+      data-poster={m.poster}
+      data-title={title}
+      class="absolute bottom-4 end-4 grid size-12 place-items-center rounded-full bg-white/90 text-black shadow-lg transition group-hover:scale-110 hover:bg-brand hover:text-white"
+      aria-label={`${title} — video`}
+    ><Icon name="play" /></button>
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="text-xl font-bold">{title}</h3>
+    {text && <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">{text}</p>}
+    {cta && (
+      <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-brand">
+        {cta}<Icon name="arrow" size={16} class="flip-rtl transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+      </span>
+    )}
+  </div>
+</Tag>

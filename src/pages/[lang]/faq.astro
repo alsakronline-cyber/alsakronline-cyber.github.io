@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { faqs } from '../../data/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: tr(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: tr(f.a, lang) } })),
+};
+---
+<Layout lang={lang} title={t.nav.faq} description={t.home.faqText} jsonLd={jsonLd} overlay>
+  <PageHero eyebrow={t.nav.faq} title={t.home.faqTitle} text={t.home.faqText} video="narrow-spiral" crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.faq }]} />
+  <section class="container-x max-w-4xl py-20" data-reveal>
+    <FaqList lang={lang} items={faqs} />
+  </section>
+  <CtaBand lang={lang} />
+</Layout>

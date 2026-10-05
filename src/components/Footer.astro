@@ -1,0 +1,76 @@
+---
+import Icon from './Icon.astro';
+import { useT, href, tr, type Lang } from '../i18n';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useT(lang);
+const year = new Date().getFullYear();
+
+const company = [
+  { label: t.nav.about, to: 'about' },
+  { label: t.nav.industries, to: 'industries' },
+  { label: t.nav.projects, to: 'projects' },
+  { label: t.nav.services, to: 'services' },
+  { label: t.nav.contact, to: 'contact' },
+];
+const resources = [
+  { label: t.nav.quote, to: 'request-quotation' },
+  { label: t.nav.spareParts, to: 'spare-parts' },
+  { label: t.nav.blog, to: 'blog' },
+  { label: t.nav.faq, to: 'faq' },
+];
+---
+<footer class="relative mt-24 overflow-hidden border-t border-line bg-bg-soft">
+  <div class="chain-line opacity-60"></div>
+  <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.3fr]">
+    <div>
+      <a href={href(lang)} class="flex items-center gap-3">
+        <img src="/brand/logo.jpg" alt="" width="56" height="56" class="size-14 rounded-full bg-white" loading="lazy" />
+        <span class="font-display text-lg font-bold">{t.brand}</span>
+      </a>
+      <p class="mt-5 max-w-sm text-sm leading-relaxed text-muted">{t.footer.about}</p>
+      <div class="mt-6 flex gap-2">
+        {site.socials.map((s) => (
+          <a href={s.url} target="_blank" rel="noopener" aria-label={s.name} class="grid size-10 place-items-center rounded-full border border-line text-muted transition hover:border-brand hover:bg-brand hover:text-white">
+            <Icon name={s.icon} size={17} />
+          </a>
+        ))}
+      </div>
+    </div>
+    <div>
+      <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-ink rtl:tracking-normal">{t.footer.company}</h3>
+      <ul class="space-y-2.5 text-sm text-muted">{company.map((l) => <li><a href={href(lang, l.to)} class="hover:text-brand">{l.label}</a></li>)}</ul>
+    </div>
+    <div>
+      <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-ink rtl:tracking-normal">{t.footer.solutions}</h3>
+      <ul class="space-y-2.5 text-sm text-muted">
+        {products.slice(0, 6).map((p) => <li><a href={href(lang, `conveyor-systems/${p.slug}`)} class="hover:text-brand">{tr(p.name, lang)}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-ink rtl:tracking-normal">{t.footer.resources}</h3>
+      <ul class="space-y-2.5 text-sm text-muted">{resources.map((l) => <li><a href={href(lang, l.to)} class="hover:text-brand">{l.label}</a></li>)}</ul>
+    </div>
+    <div>
+      <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-ink rtl:tracking-normal">{t.footer.contact}</h3>
+      <ul class="space-y-3.5 text-sm text-muted">
+        <li class="flex gap-3"><Icon name="pin" size={18} class="mt-0.5 shrink-0 text-brand" /><a href={site.mapUrl} target="_blank" rel="noopener" class="hover:text-brand">{tr(site.address, lang)}</a></li>
+        <li class="flex gap-3"><Icon name="phone" size={18} class="shrink-0 text-brand" /><a href={`tel:${site.phone}`} dir="ltr" class="hover:text-brand">{site.phoneDisplay}</a></li>
+        <li class="flex gap-3"><Icon name="mail" size={18} class="shrink-0 text-brand" /><a href={`mailto:${site.email}`} class="break-all hover:text-brand">{site.email}</a></li>
+        <li class="flex gap-3"><Icon name="clock" size={18} class="shrink-0 text-brand" />{t.contact.hoursValue}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="container-x flex flex-col items-center justify-between gap-3 py-6 text-xs text-muted sm:flex-row">
+      <p>© {year} {t.brandLong}. {t.footer.rights}</p>
+      <div class="flex gap-5">
+        <a href={href(lang, 'privacy-policy')} class="hover:text-brand">{t.footer.privacy}</a>
+        <a href={href(lang, 'terms')} class="hover:text-brand">{t.footer.terms}</a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,16 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
+
+export default defineConfig({
+  site: 'https://alsakronline-cyber.github.io',
+  trailingSlash: 'ignore',
+  i18n: {
+    locales: ['en', 'ar'],
+    defaultLocale: 'en',
+    routing: { prefixDefaultLocale: true, redirectToDefaultLocale: false },
+  },
+  integrations: [sitemap({ i18n: { defaultLocale: 'en', locales: { en: 'en', ar: 'ar' } } })],
+  vite: { plugins: [tailwindcss()] },
+});

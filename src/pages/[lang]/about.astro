@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { site } from '../../data/site';
+import { process } from '../../data/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+const ar = lang === 'ar';
+
+const values = [
+  { icon: 'target', en: ['Engineering first', 'Every decision is backed by calculation, testing and real-world experience.'], ar: ['الهندسة أولًا', 'كل قرار مدعوم بالحسابات والاختبار والخبرة العملية.'] },
+  { icon: 'shield', en: ['Built to last', 'Quality components and robust fabrication for years of uptime.'], ar: ['صُنع ليدوم', 'مكوّنات عالية الجودة وتصنيع متين لسنوات من التشغيل.'] },
+  { icon: 'bolt', en: ['Fast response', 'A local team that answers quickly and is on site when you need it.'], ar: ['استجابة سريعة', 'فريق محلي يرد بسرعة ويصل إلى موقعك عند الحاجة.'] },
+  { icon: 'refresh', en: ['Long-term partnership', 'We support, extend and upgrade the lines we build.'], ar: ['شراكة طويلة الأمد', 'ندعم ونوسّع ونطوّر الخطوط التي ننفذها.'] },
+];
+---
+<Layout lang={lang} title={t.nav.about} description={t.footer.about} overlay>
+  <PageHero
+    eyebrow={t.nav.about}
+    title={ar ? 'شريكك في حركة المواد داخل المصنع' : 'Your partner in moving products through the plant'}
+    text={t.footer.about}
+    video="yava-factory-system"
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.about }]}
+  />
+
+  <section class="container-x grid items-center gap-14 py-24 lg:grid-cols-2">
+    <div data-reveal>
+      <span class="eyebrow">{t.brandLong}</span>
+      <h2 class="mt-3 text-3xl font-bold sm:text-4xl">{ar ? 'من العاشر من رمضان إلى خطوط الإنتاج في المنطقة' : 'From 10th of Ramadan City to production lines across the region'}</h2>
+      <div class="prose-body mt-4">
+        <p>{ar
+          ? 'الصقر لأنظمة النقل والسيور شركة مصرية متخصصة في تصميم وتصنيع وتركيب أنظمة السيور ومناولة المواد. نعمل مع مصانع الأغذية والأدوية والمشروبات والسلع الاستهلاكية والتجميع لربط ماكيناتها بخطوط نقل موثوقة وفعّالة.'
+          : 'Al Sakr Conveying is an Egyptian company specialised in designing, manufacturing and installing conveyor and material-handling systems. We work with food, pharmaceutical, beverage, FMCG and assembly plants to connect their machines with reliable, efficient conveying.'}</p>
+        <p>{ar
+          ? 'بالشراكة مع YA-VA، نجمع بين مكوّنات سيور الجنزير المرنة الأوروبية المجرّبة وبين فريق هندسي وورشة تصنيع محليين — لتحصل على جودة عالمية مع سرعة استجابة ودعم محلي.'
+          : 'In partnership with YA-VA, we combine proven European flexible chain components with a local engineering team and fabrication workshop — giving you world-class quality with local speed and support.'}</p>
+      </div>
+      <div class="mt-8 grid grid-cols-2 gap-4">
+        {site.stats.map((s) => (
+          <div class="rounded-2xl border border-line bg-surface p-5">
+            <div class="font-display text-3xl font-bold text-brand"><span data-count={s.value}>{s.value}</span>{s.suffix}</div>
+            <div class="mt-1 text-sm text-muted">{tr(s.label, lang)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="grid gap-5" data-reveal style="--d:120ms">
+      <VideoCard video="factory-system" title={ar ? 'من داخل المصنع' : 'Inside the factory'} aspect="aspect-video" />
+      <div class="grid grid-cols-2 gap-5">
+        <VideoCard video="modular-belt" title={ar ? 'تجميع السيور' : 'Belt assembly'} aspect="aspect-square" />
+        <VideoCard video="narrow-spiral" title={ar ? 'حلزوني ضيق' : 'Narrow spiral'} aspect="aspect-square" />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-bg-soft py-24">
+    <div class="container-x">
+      <div class="grid gap-5 md:grid-cols-2">
+        {[
+          { icon: 'target', title: t.home.missionTitle, text: t.home.missionText },
+          { icon: 'eye', title: t.home.visionTitle, text: t.home.visionText },
+        ].map((b) => (
+          <div class="card p-10" data-reveal>
+            <span class="grid size-12 place-items-center rounded-xl bg-brand text-white"><Icon name={b.icon} size={24} /></span>
+            <h3 class="mt-5 text-2xl font-bold">{b.title}</h3>
+            <p class="mt-3 leading-relaxed text-muted">{b.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <SectionHeading class="mt-24" eyebrow={ar ? 'قيمنا' : 'Our values'} title={ar ? 'ما الذي يميّزنا' : 'What sets us apart'} />
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {values.map((v, i) => (
+          <div class="card card-hover p-7" data-reveal style={`--d:${i * 80}ms`}>
+            <Icon name={v.icon} size={30} class="text-brand" />
+            <h3 class="mt-5 text-lg font-bold">{v[lang][0]}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted">{v[lang][1]}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-24">
+    <SectionHeading eyebrow={t.nav.services} title={t.home.processTitle} text={t.home.processText} />
+    <ol class="mt-12 space-y-4">
+      {process.map((s, i) => (
+        <li class="card flex items-center gap-6 p-6" data-reveal style={`--d:${i * 80}ms`}>
+          <span class="font-display text-4xl font-bold text-brand/40">0{i + 1}</span>
+          <div>
+            <h3 class="text-xl font-bold">{tr(s.title, lang)}</h3>
+            <p class="text-muted">{tr(s.text, lang)}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <CtaBand lang={lang} />
+</Layout>

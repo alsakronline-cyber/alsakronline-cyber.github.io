@@ -1,0 +1,73 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/Icon.astro';
+import PageHero from '../../../components/PageHero.astro';
+import VideoCard from '../../../components/VideoCard.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { useT, tr, href, langs, type Lang } from '../../../i18n';
+import { projects, industries, type Project } from '../../../data/content';
+import { productBySlug } from '../../../data/products';
+import { media } from '../../../data/site';
+
+export const getStaticPaths = () =>
+  langs.flatMap((lang) => projects.map((project) => ({ params: { lang, slug: project.slug }, props: { project } })));
+
+const lang = Astro.params.lang as Lang;
+const { project: p } = Astro.props as { project: Project };
+const t = useT(lang);
+const title = tr(p.title, lang);
+const m = media(p.video);
+const product = productBySlug(p.product)!;
+const industry = industries.find((i) => i.slug === p.industry)!;
+const more = projects.filter((x) => x.slug !== p.slug).slice(0, 2);
+---
+<Layout lang={lang} title={title} description={tr(p.summary, lang)} image={m.poster} overlay>
+  <PageHero
+    eyebrow={tr(industry.name, lang)}
+    title={title}
+    text={tr(p.summary, lang)}
+    video={p.video}
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.projects, href: href(lang, 'projects') }, { label: title }]}
+  />
+
+  <section class="container-x py-20">
+    <div class="relative overflow-hidden rounded-3xl bg-black" data-reveal>
+      <video src={m.full} poster={m.poster} controls playsinline preload="metadata" class="aspect-video w-full object-contain"></video>
+    </div>
+
+    <div class="mt-14 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-8">
+        {[
+          { label: t.projects.challenge, text: p.challenge, icon: 'target' },
+          { label: t.projects.solution, text: p.solution, icon: 'gear' },
+          { label: t.projects.result, text: p.result, icon: 'check' },
+        ].map((b, i) => (
+          <div class="flex gap-5" data-reveal style={`--d:${i * 100}ms`}>
+            <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand"><Icon name={b.icon} size={22} /></span>
+            <div>
+              <h2 class="text-xl font-bold">{b.label}</h2>
+              <p class="mt-2 text-lg leading-relaxed text-muted">{tr(b.text, lang)}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <aside class="card self-start p-6" data-reveal>
+        <dl class="divide-y divide-line text-sm">
+          <div class="flex justify-between gap-4 py-3"><dt class="text-muted">{t.projects.industry}</dt><dd class="font-semibold">{tr(industry.name, lang)}</dd></div>
+          <div class="flex justify-between gap-4 py-3"><dt class="text-muted">{t.projects.system}</dt><dd class="text-end font-semibold"><a href={href(lang, `conveyor-systems/${product.slug}`)} class="text-brand hover:underline">{tr(product.name, lang)}</a></dd></div>
+          {p.facts.map((f) => <div class="flex justify-between gap-4 py-3"><dt class="text-muted">{tr(f.label, lang)}</dt><dd class="font-semibold">{tr(f.value, lang)}</dd></div>)}
+        </dl>
+        <a href={`${href(lang, 'request-quotation')}?product=${product.slug}`} class="btn btn-primary mt-5 w-full">{t.actions.quote}</a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="container-x">
+    <h2 class="text-3xl font-bold" data-reveal>{t.projects.more}</h2>
+    <div class="mt-8 grid gap-6 md:grid-cols-2">
+      {more.map((x, i) => <VideoCard video={x.video} title={tr(x.title, lang)} text={tr(x.summary, lang)} href={href(lang, `projects/${x.slug}`)} cta={t.actions.learnMore} aspect="aspect-video" delay={i * 100} />)}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Layout>

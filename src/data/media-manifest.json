@@ -1,0 +1,74 @@
+{
+  "sus304-flex-chain": {
+    "orientation": "landscape",
+    "duration": 32
+  },
+  "yava-spiral": {
+    "orientation": "landscape",
+    "duration": 33
+  },
+  "detergent-spiral": {
+    "orientation": "landscape",
+    "duration": 10
+  },
+  "flex-chain-food": {
+    "orientation": "portrait",
+    "duration": 35
+  },
+  "flex-chain-pharma": {
+    "orientation": "landscape",
+    "duration": 36
+  },
+  "yava-factory-system": {
+    "orientation": "landscape",
+    "duration": 40
+  },
+  "factory-system": {
+    "orientation": "landscape",
+    "duration": 23
+  },
+  "flex-spiral": {
+    "orientation": "landscape",
+    "duration": 34
+  },
+  "buffer-chain": {
+    "orientation": "landscape",
+    "duration": 35
+  },
+  "flex-chain-pharma-vertical": {
+    "orientation": "portrait",
+    "duration": 26
+  },
+  "pallet-chain": {
+    "orientation": "landscape",
+    "duration": 32
+  },
+  "food-line": {
+    "orientation": "landscape",
+    "duration": 35
+  },
+  "modular-belt": {
+    "orientation": "landscape",
+    "duration": 34
+  },
+  "narrow-spiral": {
+    "orientation": "portrait",
+    "duration": 32
+  },
+  "no-gap-chain": {
+    "orientation": "landscape",
+    "duration": 25
+  },
+  "spiral-2022": {
+    "orientation": "landscape",
+    "duration": 29
+  },
+  "spiral-classic": {
+    "orientation": "landscape",
+    "duration": 45
+  },
+  "gripper-conveyor": {
+    "orientation": "portrait",
+    "duration": 27
+  }
+}

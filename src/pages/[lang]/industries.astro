@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { industries } from '../../data/content';
+import { products } from '../../data/products';
+import { media } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+---
+<Layout lang={lang} title={t.nav.industries} description={t.home.industriesText} overlay>
+  <PageHero
+    eyebrow={t.nav.industries}
+    title={t.home.industriesTitle}
+    text={t.home.industriesText}
+    video="food-line"
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.industries }]}
+  />
+
+  <nav class="sticky top-16 z-30 border-b border-line bg-bg/90 backdrop-blur lg:top-[72px]" aria-label={t.nav.industries}>
+    <div class="container-x flex gap-2 overflow-x-auto py-3 text-sm font-semibold [scrollbar-width:none]">
+      {industries.map((i) => <a href={`#${i.slug}`} class="shrink-0 rounded-full px-4 py-2 text-muted hover:bg-bg-soft hover:text-ink">{tr(i.name, lang)}</a>)}
+    </div>
+  </nav>
+
+  <div class="container-x space-y-24 py-20">
+    {industries.map((ind, i) => {
+      const m = media(ind.video);
+      const fits = products.filter((p) => p.industries.includes(ind.slug));
+      return (
+        <section id={ind.slug} class="grid scroll-mt-40 items-center gap-10 lg:grid-cols-2">
+          <div class:list={['relative overflow-hidden rounded-3xl bg-black', i % 2 === 1 && 'lg:order-2']} data-reveal>
+            <video data-src={m.loop} data-autoplay muted loop playsinline preload="none" poster={m.poster} class="aspect-[4/3] w-full object-cover" aria-hidden="true"></video>
+            <button type="button" data-lightbox={m.full} data-poster={m.poster} data-title={tr(ind.name, lang)} class="absolute bottom-5 start-5 btn bg-white/90 !py-2.5 text-black hover:bg-white">
+              <Icon name="play" size={16} />{t.actions.watch}
+            </button>
+          </div>
+          <div data-reveal style="--d:100ms">
+            <span class="font-display text-6xl font-bold text-brand/20">0{i + 1}</span>
+            <h2 class="mt-2 text-3xl font-bold sm:text-4xl">{tr(ind.name, lang)}</h2>
+            <p class="mt-4 text-lg leading-relaxed text-muted">{tr(ind.text, lang)}</p>
+            <ul class="mt-6 space-y-2.5">
+              {ind.needs.map((n) => <li class="flex items-center gap-3"><Icon name="check" size={18} class="text-brand" />{tr(n, lang)}</li>)}
+            </ul>
+            <div class="mt-7 flex flex-wrap gap-2">
+              {fits.map((p) => (
+                <a href={href(lang, `conveyor-systems/${p.slug}`)} class="flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium transition hover:border-brand hover:text-brand">
+                  <Icon name={p.icon} size={16} />{tr(p.name, lang)}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    })}
+  </div>
+
+  <CtaBand lang={lang} />
+</Layout>

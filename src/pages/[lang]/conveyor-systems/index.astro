@@ -1,0 +1,48 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import VideoCard from '../../../components/VideoCard.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../../i18n';
+import { products } from '../../../data/products';
+import { industries } from '../../../data/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+---
+<Layout lang={lang} title={t.nav.products} description={t.home.productsText} overlay>
+  <PageHero
+    eyebrow={t.nav.products}
+    title={t.home.productsTitle}
+    text={t.home.productsText}
+    video="flex-spiral"
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.products }]}
+  />
+
+  <section class="container-x py-16">
+    <div class="flex flex-wrap items-center gap-2" data-filter-group="#catalogue" role="group" aria-label={t.product.filter}>
+      <span class="label me-2 !mb-0">{t.product.filter}:</span>
+      <button type="button" data-filter="all" aria-pressed="true" class="chip">{t.actions.all}</button>
+      {industries.map((i) => <button type="button" data-filter={i.slug} aria-pressed="false" class="chip">{tr(i.name, lang)}</button>)}
+    </div>
+
+    <div id="catalogue" class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {products.map((p, i) => (
+        <VideoCard
+          video={p.videos[0]}
+          title={tr(p.name, lang)}
+          text={tr(p.short, lang)}
+          href={href(lang, `conveyor-systems/${p.slug}`)}
+          tags={p.industries.join(' ')}
+          tag={`${p.videos.length} ${t.product.videos}`}
+          cta={t.actions.learnMore}
+          delay={(i % 3) * 100}
+        />
+      ))}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Layout>
+

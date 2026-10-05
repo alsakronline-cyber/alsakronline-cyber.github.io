@@ -1,0 +1,20 @@
+---
+// Language gateway: remembered choice → browser language → English.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Al Sakr Conveying | الصقر لأنظمة النقل والسيور</title>
+    <link rel="alternate" hreflang="en" href="/en/" />
+    <link rel="alternate" hreflang="ar" href="/ar/" />
+    <noscript><meta http-equiv="refresh" content="0; url=/en/" /></noscript>
+    <script is:inline>
+      let lang = 'en';
+      try { lang = localStorage.getItem('lang') || ((navigator.language || '').startsWith('ar') ? 'ar' : 'en'); } catch (e) {}
+      location.replace('/' + lang + '/');
+    </script>
+  </head>
+  <body style="background:#060d17"></body>
+</html>

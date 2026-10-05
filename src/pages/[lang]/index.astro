@@ -1,0 +1,258 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import FaqList from '../../components/FaqList.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { products, finderMap } from '../../data/products';
+import { industries, projects, process, faqs } from '../../data/content';
+import { site, media } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+
+const pillars = [
+  { icon: 'compass', title: { en: 'Design & engineering', ar: 'التصميم والهندسة' }, text: { en: 'Layouts, 3D models and throughput calculations tailored to your plant.', ar: 'مخططات ونماذج ثلاثية الأبعاد وحسابات إنتاجية مصمَّمة لمصنعك.' }, to: 'services' },
+  { icon: 'factory', title: { en: 'Manufacturing & installation', ar: 'التصنيع والتركيب' }, text: { en: 'Fabricated in 10th of Ramadan City and installed by our own crews.', ar: 'تصنيع في مدينة العاشر من رمضان وتركيب بفرقنا الخاصة.' }, to: 'conveyor-systems' },
+  { icon: 'shield', title: { en: 'Maintenance & spare parts', ar: 'الصيانة وقطع الغيار' }, text: { en: 'Preventive maintenance, fast response and parts from stock.', ar: 'صيانة وقائية واستجابة سريعة وقطع غيار من المخزون.' }, to: 'spare-parts' },
+];
+const reel = media('showreel');
+const industryName = (slug: string) => tr(industries.find((i) => i.slug === slug)!.name, lang);
+---
+<Layout lang={lang} overlay>
+  <!-- ============ HERO ============ -->
+  <section class="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[#050b14] text-white">
+    <img src={reel.poster} alt="" fetchpriority="high" class="absolute inset-0 -z-20 size-full object-cover" />
+    <video data-src={reel.full} data-autoplay muted loop playsinline preload="none" poster={reel.poster} class="absolute inset-0 -z-20 size-full object-cover" aria-hidden="true"></video>
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#050b14]/95 via-[#050b14]/70 to-[#050b14]/20 rtl:bg-gradient-to-l"></div>
+    <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#050b14] to-transparent"></div>
+
+    <div class="container-x my-auto pb-12 pt-32 lg:pb-28 lg:pt-36">
+      <div class="max-w-3xl">
+        <span class="eyebrow !text-[#5bb5f2]" data-reveal>{t.home.eyebrow}</span>
+        <h1 class="mt-5 text-[2.6rem] font-bold leading-[1.05] sm:text-6xl lg:text-7xl" data-reveal style="--d:100ms">
+          {t.home.heroTitle}
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/75 sm:text-xl" data-reveal style="--d:200ms">{t.home.heroText}</p>
+        <div class="mt-9 flex flex-wrap gap-3" data-reveal style="--d:300ms">
+          <a href={href(lang, 'conveyor-systems')} class="btn btn-primary">{t.actions.explore}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+          <a href={href(lang, 'request-quotation')} class="btn btn-ghost text-white">{t.actions.quote}</a>
+          <button type="button" data-lightbox={reel.full} data-poster={reel.poster} data-title={t.brand} class="btn text-white/90 hover:text-white">
+            <span class="grid size-10 place-items-center rounded-full border border-white/30"><Icon name="play" size={16} /></span>{t.actions.playReel}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- stats strip -->
+    <div class="relative inset-x-0 bottom-0 border-t border-white/10 bg-[#050b14]/60 backdrop-blur-md lg:absolute">
+      <div class="container-x grid grid-cols-2 divide-white/10 py-4 sm:py-5 lg:grid-cols-4 lg:divide-x rtl:lg:divide-x-reverse">
+        {site.stats.map((s) => (
+          <div class="px-2 py-2 lg:px-6">
+            <div class="font-display text-2xl font-bold sm:text-3xl"><span data-count={s.value}>{s.value}</span><span class="text-[#5bb5f2]">{s.suffix}</span></div>
+            <div class="text-xs text-white/60 sm:text-sm">{tr(s.label, lang)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <a href="#what" class="absolute bottom-32 end-6 hidden flex-col items-center gap-2 text-xs text-white/60 lg:flex" aria-label={t.home.scroll}>
+      <span class="relative h-10 w-6 rounded-full border border-white/40"><span class="absolute start-1/2 top-2 h-2 w-1 -translate-x-1/2 rounded-full bg-white" style="animation: scroll-dot 1.6s infinite"></span></span>
+    </a>
+  </section>
+
+  <!-- ============ MARQUEE ============ -->
+  <div class="marquee overflow-hidden border-b border-line bg-bg-soft py-5" aria-hidden="true">
+    <div class="marquee-track flex gap-12 whitespace-nowrap font-display text-lg font-semibold text-muted">
+      {[0, 1].map(() => (
+        <div class="flex gap-12">
+          {products.map((p) => <span class="flex items-center gap-3"><Icon name={p.icon} class="text-brand" />{tr(p.name, lang)}</span>)}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ============ WHAT WE DO ============ -->
+  <section id="what" class="container-x scroll-mt-24 py-24">
+    <div class="grid items-end gap-8 lg:grid-cols-2">
+      <SectionHeading eyebrow={t.nav.services} title={t.home.whatTitle} text={t.home.whatText} />
+    </div>
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {pillars.map((p, i) => (
+        <a href={href(lang, p.to)} data-spotlight data-reveal style={`--d:${i * 100}ms`} class="spot group card card-hover relative overflow-hidden p-8">
+          <span class="grid size-14 place-items-center rounded-2xl bg-brand-soft text-brand transition group-hover:bg-brand group-hover:text-white"><Icon name={p.icon} size={28} /></span>
+          <h3 class="mt-6 text-xl font-bold">{tr(p.title, lang)}</h3>
+          <p class="mt-3 leading-relaxed text-muted">{tr(p.text, lang)}</p>
+          <span class="mt-6 flex items-center gap-2 text-sm font-semibold text-brand">{t.actions.learnMore}<Icon name="arrow" size={16} class="flip-rtl" /></span>
+          <span class="absolute -bottom-6 end-4 font-display text-8xl font-bold text-ink/[.04]">0{i + 1}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTS ============ -->
+  <section class="bg-bg-soft py-24">
+    <div class="container-x">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <SectionHeading eyebrow={t.nav.products} title={t.home.productsTitle} text={t.home.productsText} />
+        <a href={href(lang, 'conveyor-systems')} class="btn btn-ghost shrink-0" data-reveal>{t.actions.viewAll}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+      </div>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {products.slice(0, 6).map((p, i) => (
+          <VideoCard video={p.videos[0]} title={tr(p.name, lang)} text={tr(p.short, lang)} href={href(lang, `conveyor-systems/${p.slug}`)} cta={t.actions.learnMore} tag={`${p.videos.length} ${t.product.videos}`} delay={(i % 3) * 100} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCT FINDER ============ -->
+  <section class="container-x py-24">
+    <div class="grid gap-10 overflow-hidden rounded-[2rem] border border-line bg-surface p-6 sm:p-10 lg:grid-cols-[1fr_1.2fr] lg:p-14">
+      <div data-reveal>
+        <span class="eyebrow">{t.nav.products}</span>
+        <h2 class="mt-3 text-3xl font-bold sm:text-4xl">{t.home.finderTitle}</h2>
+        <p class="mt-4 text-lg text-muted">{t.home.finderText}</p>
+        <div class="chain-line mt-8 w-40 rounded"></div>
+      </div>
+      <form id="finder" class="grid gap-3" data-reveal style="--d:100ms">
+        <p class="label">{t.home.finderNeed}</p>
+        <div class="grid gap-2 sm:grid-cols-2">
+          {Object.keys(finderMap).map((k, i) => (
+            <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-line p-3.5 text-sm transition hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand-soft">
+              <input type="radio" name="need" value={k} checked={i === 0} class="accent-[var(--brand)]" />
+              {t.finder[k as keyof typeof t.finder]}
+            </label>
+          ))}
+        </div>
+        <button class="btn btn-primary mt-3 justify-self-start" type="submit">{t.home.finderGo}<Icon name="arrow" size={18} class="flip-rtl" /></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ PROCESS ============ -->
+  <section class="relative overflow-hidden bg-[#06111f] py-24 text-white">
+    <div class="grid-lines absolute inset-0 opacity-[.06]"></div>
+    <div class="container-x relative">
+      <div class="max-w-2xl" data-reveal>
+        <span class="eyebrow !text-[#5bb5f2]">{t.nav.services}</span>
+        <h2 class="mt-3 text-3xl font-bold sm:text-4xl lg:text-[2.75rem]">{t.home.processTitle}</h2>
+        <p class="mt-4 text-lg text-white/70">{t.home.processText}</p>
+      </div>
+      <ol class="relative mt-14 grid gap-8 md:grid-cols-5">
+        <div class="chain-line absolute inset-x-0 top-7 hidden opacity-50 md:block"></div>
+        {process.map((s, i) => (
+          <li class="relative" data-reveal style={`--d:${i * 120}ms`}>
+            <span class="relative z-10 grid size-14 place-items-center rounded-full border-2 border-[#2a9cec] bg-[#06111f] font-display text-lg font-bold text-[#5bb5f2]">0{i + 1}</span>
+            <h3 class="mt-5 text-xl font-bold">{tr(s.title, lang)}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-white/65">{tr(s.text, lang)}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ INDUSTRIES ============ -->
+  <section class="container-x py-24">
+    <SectionHeading eyebrow={t.nav.industries} title={t.home.industriesTitle} text={t.home.industriesText} />
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {industries.map((ind, i) => {
+        const m = media(ind.video);
+        return (
+          <a href={href(lang, `industries#${ind.slug}`)} data-hover-host data-reveal style={`--d:${(i % 3) * 100}ms`} class="group relative isolate flex min-h-[300px] flex-col justify-end overflow-hidden rounded-3xl p-7 text-white">
+            <img src={m.poster} alt="" loading="lazy" class="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
+            <video data-src={m.loop} data-hover muted loop playsinline preload="none" class="absolute inset-0 -z-20 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 [&.playing]:opacity-100" aria-hidden="true"></video>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/40 to-black/10"></div>
+            <h3 class="text-2xl font-bold">{tr(ind.name, lang)}</h3>
+            <p class="mt-2 max-h-0 overflow-hidden text-sm text-white/80 opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100 max-md:max-h-24 max-md:opacity-100">{tr(ind.text, lang)}</p>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section class="bg-bg-soft py-24">
+    <div class="container-x">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <SectionHeading eyebrow={t.nav.projects} title={t.home.projectsTitle} text={t.home.projectsText} />
+        <a href={href(lang, 'projects')} class="btn btn-ghost shrink-0" data-reveal>{t.actions.viewAll}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+      </div>
+      <div class="mt-12 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        {projects.slice(0, 1).map((p) => (
+          <VideoCard video={p.video} title={tr(p.title, lang)} text={tr(p.summary, lang)} href={href(lang, `projects/${p.slug}`)} tag={industryName(p.industry)} cta={t.actions.learnMore} aspect="aspect-[16/10]" />
+        ))}
+        <div class="grid gap-6">
+          {projects.slice(1, 3).map((p, i) => (
+            <VideoCard video={p.video} title={tr(p.title, lang)} href={href(lang, `projects/${p.slug}`)} tag={industryName(p.industry)} aspect="aspect-[16/7]" delay={(i + 1) * 100} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARTNER ============ -->
+  <section class="container-x py-24">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div data-reveal>
+        <span class="eyebrow">{t.home.partnerEyebrow}</span>
+        <h2 class="mt-3 text-3xl font-bold sm:text-4xl">{t.home.partnerTitle}</h2>
+        <p class="mt-5 text-lg leading-relaxed text-muted">{t.home.partnerText}</p>
+        <div class="mt-8 flex items-center gap-6">
+          <img src="/brand/logo.jpg" alt={t.brand} width="72" height="72" class="size-[72px] rounded-full bg-white" loading="lazy" />
+          <span class="text-3xl font-light text-muted">×</span>
+          <span class="font-display text-4xl font-black tracking-tight text-[#e2231a]">YA-VA</span>
+        </div>
+      </div>
+      <div class="relative" data-reveal style="--d:120ms">
+        <div class="absolute -inset-4 -z-10 rounded-[2.5rem] bg-gradient-to-br from-brand/30 to-transparent blur-2xl"></div>
+        <VideoCard video="yava-factory-system" title={tr(projects[1].title, lang)} aspect="aspect-video" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSION / VISION ============ -->
+  <section class="container-x">
+    <div class="grid gap-5 md:grid-cols-2">
+      {[
+        { icon: 'target', title: t.home.missionTitle, text: t.home.missionText },
+        { icon: 'eye', title: t.home.visionTitle, text: t.home.visionText },
+      ].map((b, i) => (
+        <div class="card relative overflow-hidden p-8 sm:p-10" data-reveal style={`--d:${i * 100}ms`}>
+          <span class="grid size-12 place-items-center rounded-xl bg-brand text-white"><Icon name={b.icon} size={24} /></span>
+          <h3 class="mt-5 text-2xl font-bold">{b.title}</h3>
+          <p class="mt-3 leading-relaxed text-muted">{b.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+
+  <!-- ============ FAQ ============ -->
+  <section class="container-x pt-24">
+    <div class="grid gap-12 lg:grid-cols-[1fr_1.6fr]">
+      <SectionHeading eyebrow={t.nav.faq} title={t.home.faqTitle} text={t.home.faqText}>
+        <a href={href(lang, 'faq')} class="btn btn-ghost mt-6">{t.actions.viewAll}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+      </SectionHeading>
+      <div data-reveal><FaqList lang={lang} items={faqs.slice(0, 5)} /></div>
+    </div>
+  </section>
+</Layout>
+
+<script define:vars={{ finderMap, base: `/${lang}/conveyor-systems/` }}>
+  document.getElementById('finder')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const need = new FormData(e.target).get('need');
+    location.href = base + finderMap[need];
+  });
+</script>
+
+<style>
+  .spot::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--brand) 14%, transparent), transparent 60%);
+  }
+  .spot:hover::before { opacity: 1; }
+</style>

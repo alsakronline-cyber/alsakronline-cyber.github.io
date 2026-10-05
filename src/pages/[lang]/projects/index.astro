@@ -1,0 +1,48 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import VideoCard from '../../../components/VideoCard.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../../i18n';
+import { projects, industries } from '../../../data/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+const used = industries.filter((i) => projects.some((p) => p.industry === i.slug));
+const industryName = (slug: string) => tr(industries.find((i) => i.slug === slug)!.name, lang);
+---
+<Layout lang={lang} title={t.nav.projects} description={t.home.projectsText} overlay>
+  <PageHero
+    eyebrow={t.nav.projects}
+    title={t.home.projectsTitle}
+    text={t.home.projectsText}
+    video="spiral-2022"
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.projects }]}
+  />
+
+  <section class="container-x py-16">
+    <div class="flex flex-wrap gap-2" data-filter-group="#project-grid" role="group">
+      <button type="button" data-filter="all" aria-pressed="true" class="chip">{t.actions.all}</button>
+      {used.map((i) => <button type="button" data-filter={i.slug} aria-pressed="false" class="chip">{tr(i.name, lang)}</button>)}
+    </div>
+    <div id="project-grid" class="mt-10 grid gap-6 md:grid-cols-2">
+      {projects.map((p, i) => (
+        <VideoCard
+          video={p.video}
+          title={tr(p.title, lang)}
+          text={tr(p.summary, lang)}
+          href={href(lang, `projects/${p.slug}`)}
+          tag={industryName(p.industry)}
+          tags={p.industry}
+          cta={t.actions.learnMore}
+          aspect="aspect-video"
+          delay={(i % 2) * 100}
+        />
+      ))}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Layout>
+

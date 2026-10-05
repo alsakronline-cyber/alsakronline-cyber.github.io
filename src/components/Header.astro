@@ -1,0 +1,140 @@
+---
+import Icon from './Icon.astro';
+import { useT, href, switchPath, other, tr, type Lang } from '../i18n';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+interface Props { lang: Lang; overlay?: boolean; }
+const { lang, overlay = false } = Astro.props;
+const t = useT(lang);
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isActive = (p: string) => (p === '' ? path === `/${lang}` : path.startsWith(`/${lang}/${p}`));
+
+const servicesMenu = [
+  { label: t.nav.services, to: 'services' },
+  { label: t.nav.spareParts, to: 'spare-parts' },
+  { label: t.nav.faq, to: 'faq' },
+  { label: t.nav.blog, to: 'blog' },
+];
+const mobileLinks = [
+  { label: t.nav.home, to: '' },
+  { label: t.nav.about, to: 'about' },
+  { label: t.nav.products, to: 'conveyor-systems' },
+  { label: t.nav.industries, to: 'industries' },
+  { label: t.nav.projects, to: 'projects' },
+  ...servicesMenu,
+  { label: t.nav.contact, to: 'contact' },
+];
+---
+<header
+  id="site-header"
+  data-overlay={overlay ? 'true' : 'false'}
+  class:list={[
+    'group/header fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,color] duration-300',
+    overlay ? 'text-white' : 'bg-bg/85 text-ink backdrop-blur-xl shadow-[0_1px_0_var(--line)]',
+  ]}
+>
+  <!-- Top bar -->
+  <div class="hidden border-b border-current/10 text-xs lg:block group-data-[scrolled=true]/header:hidden">
+    <div class="container-x flex h-9 items-center justify-between opacity-80">
+      <div class="flex items-center gap-5">
+        <a href={`tel:${site.phone}`} class="flex items-center gap-1.5 hover:opacity-100"><Icon name="phone" size={14} /><span dir="ltr">{site.phoneDisplay}</span></a>
+        <a href={`mailto:${site.email}`} class="flex items-center gap-1.5"><Icon name="mail" size={14} />{site.email}</a>
+        <span class="flex items-center gap-1.5"><Icon name="pin" size={14} />{t.footer.madeIn}</span>
+      </div>
+      <div class="flex items-center gap-3">
+        {site.socials.map((s) => <a href={s.url} target="_blank" rel="noopener" aria-label={s.name} class="hover:text-brand"><Icon name={s.icon} size={15} /></a>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="container-x flex h-16 items-center justify-between gap-4 lg:h-[72px]">
+    <a href={href(lang)} class="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label={t.brand}>
+      <img src="/brand/logo.jpg" alt="" width="44" height="44" class="size-10 rounded-full bg-white ring-2 ring-white/40 sm:size-11" />
+      <span class="leading-tight">
+        <span class="block font-display text-[13px] font-bold tracking-tight sm:text-[15px]">{t.brand}</span>
+        <span class="hidden text-[11px] opacity-70 sm:block">{lang === 'ar' ? 'Al Sakr Conveying' : 'الصقر لأنظمة النقل والسيور'}</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-1 text-sm font-medium xl:flex" aria-label="Main">
+      <a href={href(lang)} class:list={['nav-link', isActive('') && 'is-active']}>{t.nav.home}</a>
+      <a href={href(lang, 'about')} class:list={['nav-link', isActive('about') && 'is-active']}>{t.nav.about}</a>
+      <div class="group relative">
+        <a href={href(lang, 'conveyor-systems')} class:list={['nav-link flex items-center gap-1', isActive('conveyor-systems') && 'is-active']}>
+          {t.nav.products}<Icon name="down" size={14} />
+        </a>
+        <div class="invisible absolute start-1/2 top-full w-[560px] -translate-x-1/2 rtl:translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          <div class="card grid grid-cols-2 gap-1 p-3 text-ink shadow-2xl">
+            {products.map((p) => (
+              <a href={href(lang, `conveyor-systems/${p.slug}`)} class="flex items-start gap-3 rounded-xl p-3 hover:bg-bg-soft">
+                <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand"><Icon name={p.icon} size={18} /></span>
+                <span>
+                  <span class="block font-semibold">{tr(p.name, lang)}</span>
+                  <span class="line-clamp-2 text-xs text-muted">{tr(p.short, lang)}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <a href={href(lang, 'industries')} class:list={['nav-link', isActive('industries') && 'is-active']}>{t.nav.industries}</a>
+      <a href={href(lang, 'projects')} class:list={['nav-link', isActive('projects') && 'is-active']}>{t.nav.projects}</a>
+      <div class="group relative">
+        <a href={href(lang, 'services')} class:list={['nav-link flex items-center gap-1', servicesMenu.some((m) => isActive(m.to)) && 'is-active']}>
+          {t.nav.services}<Icon name="down" size={14} />
+        </a>
+        <div class="invisible absolute start-0 top-full w-56 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          <div class="card p-2 text-ink shadow-2xl">
+            {servicesMenu.map((m) => <a href={href(lang, m.to)} class="block rounded-lg px-3 py-2.5 hover:bg-bg-soft">{m.label}</a>)}
+          </div>
+        </div>
+      </div>
+      <a href={href(lang, 'contact')} class:list={['nav-link', isActive('contact') && 'is-active']}>{t.nav.contact}</a>
+    </nav>
+
+    <div class="flex shrink-0 items-center gap-0.5 sm:gap-2">
+      <button type="button" data-theme-toggle class="grid size-10 place-items-center rounded-full hover:bg-current/10" aria-label={t.actions.theme}>
+        <Icon name="sun" class="hidden dark:block" />
+        <Icon name="moon" class="dark:hidden" />
+      </button>
+      <a href={switchPath(Astro.url.pathname, other(lang))} hreflang={other(lang)} data-lang-switch={other(lang)} class="flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-semibold hover:bg-current/10 sm:px-3" aria-label={t.switchTo}>
+        <Icon name="globe" size={18} /><span class="hidden sm:inline">{t.switchTo}</span>
+      </a>
+      <a href={href(lang, 'request-quotation')} class="btn btn-primary hidden !py-2.5 md:inline-flex">{t.nav.quote}</a>
+      <button type="button" data-menu-open class="grid size-10 place-items-center rounded-full hover:bg-current/10 xl:hidden" aria-label={t.nav.menu} aria-controls="mobile-menu" aria-expanded="false">
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div id="mobile-menu" class="fixed inset-0 z-[60] hidden xl:hidden" role="dialog" aria-modal="true" aria-label={t.nav.menu}>
+  <div data-menu-close class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+  <div class="absolute inset-y-0 end-0 flex w-[min(380px,88vw)] flex-col overflow-y-auto bg-surface p-6 text-ink shadow-2xl">
+    <div class="mb-6 flex items-center justify-between">
+      <img src="/brand/logo.jpg" alt={t.brand} width="48" height="48" class="size-12 rounded-full bg-white" />
+      <button type="button" data-menu-close class="grid size-10 place-items-center rounded-full bg-bg-soft" aria-label={t.nav.close}><Icon name="close" /></button>
+    </div>
+    <nav class="flex flex-col text-lg font-semibold">
+      {mobileLinks.map((m) => (
+        <a href={href(lang, m.to)} class:list={['flex items-center justify-between border-b border-line py-3.5', isActive(m.to) && m.to !== '' ? 'text-brand' : isActive('') && m.to === '' ? 'text-brand' : '']}>
+          {m.label}<Icon name="chevron" size={18} class="flip-rtl opacity-40" />
+        </a>
+      ))}
+    </nav>
+    <a href={href(lang, 'request-quotation')} class="btn btn-primary mt-6">{t.nav.quote}</a>
+    <div class="mt-6 space-y-2 text-sm text-muted">
+      <a href={`tel:${site.phone}`} class="flex items-center gap-2"><Icon name="phone" size={16} /><span dir="ltr">{site.phoneDisplay}</span></a>
+      <a href={`mailto:${site.email}`} class="flex items-center gap-2"><Icon name="mail" size={16} />{site.email}</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nav-link { white-space: nowrap; padding: .5rem .7rem; border-radius: 999px; transition: background-color .2s, color .2s; position: relative; }
+  .nav-link:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+  .nav-link.is-active::after { content: ""; position: absolute; inset-inline: .8rem; bottom: .2rem; height: 2px; border-radius: 2px; background: var(--brand); }
+  #site-header[data-scrolled="true"][data-overlay="true"] { background: color-mix(in srgb, var(--bg) 88%, transparent); color: var(--text); backdrop-filter: blur(18px); box-shadow: 0 1px 0 var(--line); }
+</style>

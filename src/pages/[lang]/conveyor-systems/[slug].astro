@@ -1,0 +1,115 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/Icon.astro';
+import PageHero from '../../../components/PageHero.astro';
+import VideoCard from '../../../components/VideoCard.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { useT, tr, href, langs, type Lang } from '../../../i18n';
+import { products, type Product } from '../../../data/products';
+import { industries } from '../../../data/content';
+import { media, waLink } from '../../../data/site';
+
+export const getStaticPaths = () =>
+  langs.flatMap((lang) => products.map((product) => ({ params: { lang, slug: product.slug }, props: { product } })));
+
+const lang = Astro.params.lang as Lang;
+const { product: p } = Astro.props as { product: Product };
+const t = useT(lang);
+const name = tr(p.name, lang);
+const cover = media(p.videos[0]);
+const related = products.filter((x) => x.slug !== p.slug).slice(0, 3);
+const ask = lang === 'ar' ? `مرحبًا، أود عرض سعر لـ: ${name}` : `Hello, I would like a quotation for: ${name}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name,
+  description: tr(p.description, lang),
+  image: new URL(cover.poster, Astro.site).toString(),
+  brand: { '@type': 'Brand', name: t.brand },
+  manufacturer: { '@type': 'Organization', name: t.brandLong },
+};
+---
+<Layout lang={lang} title={name} description={tr(p.short, lang)} image={cover.poster} jsonLd={jsonLd} overlay>
+  <PageHero
+    eyebrow={t.nav.products}
+    title={name}
+    text={tr(p.short, lang)}
+    video={p.videos[0]}
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.products, href: href(lang, 'conveyor-systems') }, { label: name }]}
+  >
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={`${href(lang, 'request-quotation')}?product=${p.slug}`} class="btn btn-primary">{t.product.quoteFor}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+      <button type="button" data-lightbox={cover.full} data-poster={cover.poster} data-title={name} class="btn btn-ghost text-white"><Icon name="play" size={16} />{t.actions.watch}</button>
+    </div>
+  </PageHero>
+
+  <section class="container-x grid gap-12 py-20 lg:grid-cols-[1.5fr_1fr]">
+    <div data-reveal>
+      <p class="text-lg leading-[1.9] text-muted">{tr(p.description, lang)}</p>
+
+      <h2 class="mt-12 text-2xl font-bold">{t.product.features}</h2>
+      <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+        {p.features.map((f) => (
+          <li class="flex items-start gap-3 rounded-xl border border-line bg-surface p-4">
+            <span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand text-white"><Icon name="check" size={14} /></span>
+            <span>{tr(f, lang)}</span>
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="mt-12 text-2xl font-bold">{t.product.applications}</h2>
+      <div class="mt-5 flex flex-wrap gap-2">
+        {p.applications.map((a) => <span class="rounded-full bg-brand-soft px-4 py-2 text-sm font-medium text-brand">{tr(a, lang)}</span>)}
+        {p.industries.map((s) => {
+          const ind = industries.find((i) => i.slug === s)!;
+          return <a href={href(lang, `industries#${s}`)} class="rounded-full border border-line px-4 py-2 text-sm font-medium hover:border-brand">{tr(ind.name, lang)}</a>;
+        })}
+      </div>
+    </div>
+
+    <aside class="lg:sticky lg:top-28 lg:self-start" data-reveal style="--d:120ms">
+      <div class="card overflow-hidden">
+        <div class="flex items-center gap-3 border-b border-line bg-bg-soft p-5">
+          <span class="grid size-10 place-items-center rounded-lg bg-brand text-white"><Icon name={p.icon} /></span>
+          <h2 class="text-lg font-bold">{t.product.specs}</h2>
+        </div>
+        <dl class="divide-y divide-line">
+          {p.specs.map((s) => (
+            <div class="flex justify-between gap-4 px-5 py-3.5 text-sm">
+              <dt class="text-muted">{tr(s.label, lang)}</dt>
+              <dd class="text-end font-semibold">{tr(s.value, lang)}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="border-t border-line px-5 py-4 text-xs text-muted">{t.product.specsNote}</p>
+        <div class="grid gap-2 p-5 pt-0">
+          <a href={`${href(lang, 'request-quotation')}?product=${p.slug}`} class="btn btn-primary">{t.actions.quote}</a>
+          <a href={waLink(ask)} target="_blank" rel="noopener" class="btn border border-[#25d366] text-[#25d366]"><Icon name="whatsapp" />{t.actions.whatsapp}</a>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  {p.videos.length > 1 && (
+    <section class="bg-bg-soft py-20">
+      <div class="container-x">
+        <h2 class="text-3xl font-bold" data-reveal>{t.product.gallery}</h2>
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {p.videos.map((v, i) => <VideoCard video={v} title={`${name} · ${i + 1}`} aspect="aspect-video" delay={(i % 3) * 80} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="container-x py-20">
+    <h2 class="text-3xl font-bold" data-reveal>{t.product.related}</h2>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {related.map((r, i) => (
+        <VideoCard video={r.videos[0]} title={tr(r.name, lang)} text={tr(r.short, lang)} href={href(lang, `conveyor-systems/${r.slug}`)} cta={t.actions.learnMore} delay={i * 100} />
+      ))}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Layout>

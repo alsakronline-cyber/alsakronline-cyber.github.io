@@ -1,0 +1,40 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/Icon.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { useT, tr, href, langs, type Lang } from '../../../i18n';
+import { posts, type Post } from '../../../data/posts';
+import { media } from '../../../data/site';
+
+export const getStaticPaths = () =>
+  langs.flatMap((lang) => posts.map((post) => ({ params: { lang, slug: post.slug }, props: { post } })));
+
+const lang = Astro.params.lang as Lang;
+const { post } = Astro.props as { post: Post };
+const t = useT(lang);
+const m = media(post.video);
+const title = tr(post.title, lang);
+const fmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { dateStyle: 'long' });
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'BlogPosting', headline: title, datePublished: post.date,
+  image: new URL(m.poster, Astro.site).toString(), author: { '@type': 'Organization', name: t.brandLong },
+};
+---
+<Layout lang={lang} title={title} description={tr(post.excerpt, lang)} image={m.poster} jsonLd={jsonLd}>
+  <article class="container-x max-w-3xl pb-10 pt-32">
+    <a href={href(lang, 'blog')} class="inline-flex items-center gap-2 text-sm font-semibold text-brand"><Icon name="arrow" size={16} class="rotate-180 rtl:rotate-0" />{t.blog.back}</a>
+    <p class="mt-8 text-sm text-muted"><time datetime={post.date}>{fmt.format(new Date(post.date))}</time> · {post.minutes} {t.blog.minRead}</p>
+    <h1 class="mt-3 text-4xl font-bold leading-tight sm:text-5xl">{title}</h1>
+    <p class="mt-5 text-xl leading-relaxed text-muted">{tr(post.excerpt, lang)}</p>
+    <div class="mt-10 overflow-hidden rounded-3xl bg-black">
+      <video src={m.loop} poster={m.poster} muted loop playsinline autoplay class="aspect-video w-full object-cover" aria-hidden="true"></video>
+    </div>
+    <div class="prose-body mt-8 text-lg">
+      {post.body.map((b) => {
+        const s = tr(b, lang);
+        return s.startsWith('## ') ? <h2>{s.slice(3)}</h2> : <p>{s}</p>;
+      })}
+    </div>
+  </article>
+  <CtaBand lang={lang} />
+</Layout>

@@ -1,0 +1,101 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import { useT, tr, href, langPaths, type Lang } from '../../i18n';
+import { site } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = useT(lang);
+const cards = [
+  { icon: 'phone', label: t.actions.call, value: site.phoneDisplay, href: `tel:${site.phone}`, ltr: true },
+  { icon: 'whatsapp', label: t.actions.whatsapp, value: site.phoneDisplay, href: `https://wa.me/${site.whatsapp}`, ltr: true },
+  { icon: 'mail', label: t.actions.email, value: site.email, href: `mailto:${site.email}` },
+  { icon: 'clock', label: t.contact.hours, value: t.contact.hoursValue },
+];
+---
+<Layout lang={lang} title={t.nav.contact} description={t.contact.text} overlay>
+  <PageHero
+    eyebrow={t.nav.contact}
+    title={t.contact.title}
+    text={t.contact.text}
+    video="sus304-flex-chain"
+    crumbs={[{ label: t.nav.home, href: href(lang) }, { label: t.nav.contact }]}
+  />
+
+  <section class="container-x py-20">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {cards.map((c, i) => {
+        const Tag = c.href ? 'a' : 'div';
+        return (
+          <Tag href={c.href} target={c.href?.startsWith('http') ? '_blank' : undefined} rel="noopener" class="card card-hover flex items-center gap-4 p-5" data-reveal style={`--d:${i * 80}ms`}>
+            <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-brand text-white"><Icon name={c.icon} size={22} /></span>
+            <span class="min-w-0">
+              <span class="block text-xs text-muted">{c.label}</span>
+              <span class="block truncate font-semibold" dir={c.ltr ? 'ltr' : undefined}>{c.value}</span>
+            </span>
+          </Tag>
+        );
+      })}
+    </div>
+
+    <div class="mt-10 grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+      <form id="contact-form" class="card grid gap-5 p-6 sm:grid-cols-2 sm:p-10" novalidate data-reveal>
+        <h2 class="text-2xl font-bold sm:col-span-2">{t.contact.formTitle}</h2>
+        <div><label class="label" for="c-name">{t.quote.name} *</label><input id="c-name" name="name" required class="field" autocomplete="name" /></div>
+        <div><label class="label" for="c-company">{t.quote.company}</label><input id="c-company" name="company" class="field" autocomplete="organization" /></div>
+        <div><label class="label" for="c-phone">{t.quote.phone} *</label><input id="c-phone" name="phone" type="tel" required class="field" dir="ltr" autocomplete="tel" /></div>
+        <div><label class="label" for="c-email">{t.quote.email}</label><input id="c-email" name="email" type="email" class="field" dir="ltr" autocomplete="email" /></div>
+        <div class="sm:col-span-2">
+          <label class="label" for="c-subject">{t.contact.subject}</label>
+          <select id="c-subject" name="subject" class="field">{t.contact.subjects.map((s) => <option>{s}</option>)}</select>
+        </div>
+        <div class="sm:col-span-2"><label class="label" for="c-message">{t.contact.message} *</label><textarea id="c-message" name="message" rows="5" required class="field"></textarea></div>
+        <p data-error class="hidden text-sm font-medium text-red-500 sm:col-span-2" role="alert">{t.quote.required}</p>
+        <div class="flex flex-wrap gap-3 sm:col-span-2">
+          <button type="submit" data-via="whatsapp" class="btn bg-[#25d366] text-white"><Icon name="whatsapp" />{t.actions.sendWhatsApp}</button>
+          <button type="submit" data-via="email" class="btn btn-primary"><Icon name="mail" />{t.actions.sendEmail}</button>
+        </div>
+      </form>
+
+      <div class="flex flex-col gap-5" data-reveal style="--d:120ms">
+        <div class="card flex-1 overflow-hidden">
+          <iframe src={site.mapEmbed} title={t.contact.address} loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="h-full min-h-[320px] w-full grayscale-[40%] dark:invert-[90%] dark:hue-rotate-180"></iframe>
+        </div>
+        <div class="card flex items-start gap-4 p-6">
+          <Icon name="pin" size={24} class="mt-1 shrink-0 text-brand" />
+          <div>
+            <h3 class="font-bold">{t.contact.address}</h3>
+            <p class="mt-1 text-muted">{tr(site.address, lang)}</p>
+            <a href={site.mapUrl} target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-brand">{t.contact.map}<Icon name="arrow" size={16} class="flip-rtl" /></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { sendMessage } from '../../scripts/send';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  let via = 'whatsapp';
+  form.querySelectorAll<HTMLButtonElement>('[data-via]').forEach((b) => b.addEventListener('click', () => (via = b.dataset.via!)));
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const ok = form.checkValidity();
+    form.querySelector('[data-error]')!.classList.toggle('hidden', ok);
+    if (!ok) { form.reportValidity(); return; }
+    const d = new FormData(form);
+    const ar = document.documentElement.lang === 'ar';
+    const lines = [
+      [ar ? 'الاسم' : 'Name', d.get('name')],
+      [ar ? 'الشركة' : 'Company', d.get('company')],
+      [ar ? 'الهاتف' : 'Phone', d.get('phone')],
+      [ar ? 'البريد' : 'Email', d.get('email')],
+      [ar ? 'الموضوع' : 'Subject', d.get('subject')],
+    ] as [string, FormDataEntryValue | null][];
+    sendMessage(via as 'whatsapp' | 'email', `${d.get('subject')}`, lines, String(d.get('message')));
+  });
+</script>

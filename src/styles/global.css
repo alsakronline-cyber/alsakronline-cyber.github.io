@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Theme tokens — brand blue sampled from the Al Sakr logo. */
+:root {
+  --bg: #f5f7fa;
+  --bg-soft: #eaeef3;
+  --surface: #ffffff;
+  --text: #0b1726;
+  --muted: #536173;
+  --line: #d9e0e8;
+  --brand: #1584d1;
+  --brand-strong: #0b6bb0;
+  --brand-soft: #e3f1fb;
+  --accent: #f2a516;
+  --steel: #8b96a3;
+  --hero-text: #ffffff;
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --bg: #060d17;
+  --bg-soft: #0b1522;
+  --surface: #0f1b2b;
+  --text: #e8eef5;
+  --muted: #94a3b5;
+  --line: #1d2b3d;
+  --brand: #2a9cec;
+  --brand-strong: #5bb5f2;
+  --brand-soft: #0d2539;
+  --accent: #ffb52e;
+  --steel: #6f7d8c;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-steel: var(--steel);
+  --font-sans: "Inter", "Cairo", system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Cairo", system-ui, sans-serif;
+  --font-arabic: "Cairo", system-ui, sans-serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html[lang="ar"] { --font-sans: "Cairo", system-ui, sans-serif; --font-display: "Cairo", system-ui, sans-serif; }
+  html[lang="ar"] body, html[lang="ar"] .font-display { font-family: "Cairo", system-ui, sans-serif; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--brand); color: #fff; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3 { letter-spacing: 0; line-height: 1.35; }
+}
+
+@layer components {
+  .container-x { width: 100%; max-width: 80rem; margin-inline: auto; padding-inline: 1rem; }
+  @media (min-width: 640px) { .container-x { padding-inline: 1.5rem; } }
+  @media (min-width: 1024px) { .container-x { padding-inline: 2rem; } }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .8rem 1.4rem; border-radius: 999px; font-weight: 600; font-size: .95rem;
+    transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease, color .2s ease;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--brand) 70%, transparent); }
+  .btn-primary:hover { background: var(--brand-strong); }
+  .btn-ghost { border: 1px solid color-mix(in srgb, currentColor 30%, transparent); backdrop-filter: blur(8px); }
+  .btn-ghost:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+  .btn-accent { background: var(--accent); color: #111; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: .6rem; font-size: .78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .14em; color: var(--brand);
+  }
+  html[lang="ar"] .eyebrow { letter-spacing: 0; font-size: .9rem; }
+  .eyebrow::before { content: ""; width: 1.75rem; height: 2px; background: currentColor; border-radius: 2px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 1.25rem;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .card-hover:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--brand) 50%, var(--line)); box-shadow: 0 24px 50px -24px rgb(0 0 0 / .35); }
+
+  .field {
+    width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: .8rem;
+    padding: .75rem 1rem; color: var(--text); transition: border-color .2s, box-shadow .2s;
+  }
+  .field:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent); }
+  .label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; color: var(--muted); }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .prose-body p { margin-block: 1rem; line-height: 1.85; color: var(--muted); }
+  .prose-body h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2.25rem; color: var(--text); }
+
+  .chip { padding: .5rem 1rem; border-radius: 999px; border: 1px solid var(--line); font-size: .875rem; font-weight: 600; color: var(--muted); transition: all .2s; }
+  .chip:hover { border-color: var(--brand); color: var(--text); }
+  .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  /* Direction-aware arrow icons */
+  [dir="rtl"] .flip-rtl { transform: scaleX(-1); }
+}
+
+/* Scroll reveal */
+[data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* Conveyor-belt marquee */
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes marquee-rtl { to { transform: translateX(50%); } }
+.marquee-track { animation: marquee 40s linear infinite; width: max-content; }
+[dir="rtl"] .marquee-track { animation-name: marquee-rtl; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes chain { to { background-position: 40px 0; } }
+.chain-line { background: repeating-linear-gradient(90deg, var(--brand) 0 18px, transparent 18px 40px); height: 3px; animation: chain 1.2s linear infinite; }
+[dir="rtl"] .chain-line { animation-direction: reverse; }
+
+@keyframes scroll-dot { 0% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(14px); opacity: 0; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  [data-reveal] { opacity: 1; transform: none; }
+}

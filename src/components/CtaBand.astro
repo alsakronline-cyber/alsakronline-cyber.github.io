@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import { useT, href, type Lang } from '../i18n';
+import { media, site } from '../data/site';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useT(lang);
+const m = media('yava-spiral');
+---
+<section class="container-x mt-24">
+  <div class="relative isolate overflow-hidden rounded-[2rem] bg-[#06213a] px-6 py-16 text-white sm:px-12 lg:px-16" data-reveal>
+    <video data-src={m.loop} data-autoplay muted loop playsinline preload="none" poster={m.poster} class="absolute inset-0 -z-20 size-full object-cover opacity-40" aria-hidden="true"></video>
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b4f86] via-[#0b4f86]/85 to-[#0b4f86]/30 rtl:bg-gradient-to-l"></div>
+    <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-bold sm:text-4xl">{t.home.ctaTitle}</h2>
+        <p class="mt-4 text-lg text-white/80">{t.home.ctaText}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href={href(lang, 'request-quotation')} class="btn btn-accent">{t.actions.quote}<Icon name="arrow" size={18} class="flip-rtl" /></a>
+        <a href={`tel:${site.phone}`} class="btn btn-ghost text-white"><Icon name="phone" size={18} />{t.actions.talk}</a>
+      </div>
+    </div>
+  </div>
+</section>
